@@ -75,5 +75,509 @@ cart: true
 
     </div>
 </div>
+
+<style>
+    .bulk-fixing-overlay {
+        position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+        background: rgba(255,255,255,0.97); z-index: 9999;
+        display: flex; flex-direction: column; align-items: center; justify-content: center;
+        font-size: 18px; font-weight: 600; color: #333; transition: opacity 0.4s ease;
+    }
+    .bulk-fixing-overlay.fade-out { opacity: 0; pointer-events: none; }
+    .bulk-fixing-overlay .spinner {
+        width: 40px; height: 40px; border: 4px solid #e0e0e0; border-top-color: #4ecdc4;
+        border-radius: 50%; animation: spin 0.8s linear infinite; margin-bottom: 16px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .bulk-cart-hidden [data-cart-content], .bulk-cart-hidden [data-cart-totals],
+    .bulk-cart-hidden .cart-actions, .bulk-cart-hidden [data-cart-additional-checkout-buttons],
+    .bulk-cart-hidden [data-cart-coupons] { opacity: 0 !important; transition: opacity 0.3s ease; }
+    .bulk-cart-visible [data-cart-content], .bulk-cart-visible [data-cart-totals],
+    .bulk-cart-visible .cart-actions, .bulk-cart-visible [data-cart-additional-checkout-buttons],
+    .bulk-cart-visible [data-cart-coupons] { opacity: 1 !important; transition: opacity 0.3s ease; }
+    .bulk-order-inline { margin: 10px 0 4px 0; padding: 0; }
+    .bulk-order-inline .order-badge {
+        display: inline-block; background: #4ecdc4; color: white; font-size: 10px;
+        font-weight: 700; padding: 2px 8px; border-radius: 3px; margin-bottom: 6px;
+        text-transform: uppercase; letter-spacing: 0.3px;
+    }
+    .bulk-order-inline .order-fields {
+        display: grid; grid-template-columns: auto 1fr; gap: 2px 10px;
+        font-size: 13px; line-height: 1.6;
+    }
+    .bulk-order-inline .field-label { color: #666; font-weight: 600; white-space: nowrap; }
+    .bulk-order-inline .field-value { color: #333; font-weight: 400; }
+    .bulk-order-inline .artwork-thumbs { display: flex; gap: 6px; margin: 6px 0 2px 0; }
+    .bulk-order-inline .artwork-thumbs img {
+        width: 60px; height: 60px; object-fit: contain; border-radius: 3px;
+        border: 1px solid #e0e0e0; background: #fafafa;
+    }
+    .bulk-order-inline .artwork-thumbs .thumb-label { font-size: 10px; color: #999; text-align: center; display: block; }
+    .bulk-artwork-override { width: 100%; max-width: 100%; height: auto; object-fit: contain; border-radius: 4px; }
+    .cart-item[data-bulk-order] .form-increment button { visibility: hidden; }
+    .cart-item[data-bulk-order] .cart-item-qty-input { pointer-events: none; opacity: 0.6; }
+    .cart-item[data-bulk-order] .definitionList {
+        display: grid !important; grid-template-columns: auto 1fr !important;
+        gap: 2px 10px !important; font-size: 13px !important; line-height: 1.6 !important;
+        margin: 2px 0 0 0 !important; padding: 0 !important; border: none !important;
+        list-style: none !important; overflow: visible !important;
+    }
+    .cart-item[data-bulk-order] .definitionList::after,
+    .cart-item[data-bulk-order] .definitionList::before { display: none !important; }
+    .cart-item[data-bulk-order] .definitionList dt,
+    .cart-item[data-bulk-order] .definitionList .definitionList-key {
+        color: #666 !important; font-weight: 600 !important; white-space: nowrap !important;
+        margin: 0 !important; padding: 0 !important; float: none !important;
+        width: auto !important; clear: none !important; display: block !important;
+    }
+    .cart-item[data-bulk-order] .definitionList dd,
+    .cart-item[data-bulk-order] .definitionList .definitionList-value {
+        color: #333 !important; font-weight: 400 !important; margin: 0 !important;
+        padding: 0 !important; float: none !important; display: block !important;
+    }
+    .cart-item[data-bulk-order] .definitionList dd a,
+    .cart-item[data-bulk-order] .definitionList .definitionList-value a {
+        color: #2b6cb0 !important; text-decoration: underline !important; font-weight: 400 !important;
+    }
+    .cart-item[data-bulk-order] a[data-item-edit] { display: none !important; }
+    .bulk-qty-note { font-size: 11px; color: #888; margin-top: 4px; font-style: italic; }
+    .bulk-preview-details { font-size: 11px; color: #666; margin-top: 4px; line-height: 1.4; }
+    .bulk-preview-details .preview-field { display: block; }
+    .bulk-preview-details .preview-label { font-weight: 600; color: #888; }
+</style>
+
+<script>
+(function() {
+    try {
+        var configs = JSON.parse(localStorage.getItem("bulk-order-pending") || "[]");
+        if (configs.length > 0) {
+            document.documentElement.classList.add("bulk-cart-hidden");
+            var overlay = document.createElement("div");
+            overlay.className = "bulk-fixing-overlay";
+            overlay.id = "bulk-fixing-overlay";
+            overlay.innerHTML = '<div class="spinner"></div><div>Loading your order...</div>';
+            document.body.appendChild(overlay);
+        }
+    } catch(e) {}
+})();
+</script>
+
+<script>
+(function() {
+    var PROXY_BASE = "https://light-cow-51.andrewhartfordbac.deno.net";
+    var BULK_PRODUCT_IDS = [475, 476, 477, 478, 479, 480];
+
+    var SKIP_FIELDS = [
+        "Configurator Type", "Quoted Price", "Quoted Quantity",
+        "Artwork File", "Artwork File 2"
+    ];
+
+    var COMPACT_FIELDS = ["Quantity", "Color", "Cooler Color", "Shape", "Mug Style",
+        "Button Size", "Print Sides", "Print Location", "Garment Fit", "Width", "Height"];
+
+    var ALWAYS_SHOW_FIELDS = ["Union Label", "Notes", "Upload Artwork"];
+
+    var TYPE_TO_SLUG = {
+        "tshirt":    "/custom-t-shirt-order/",
+        "sticker":   "/custom-sticker-order/",
+        "button":    "/custom-button-order/",
+        "mug":       "/custom-mug-order/",
+        "cancooler": "/custom-can-cooler-order/",
+        "yardsign":  "/custom-yard-sign-order/"
+    };
+
+    var PRODUCT_ID_TO_TYPE = {
+        475: "tshirt", 476: "sticker", 477: "button",
+        478: "mug", 479: "cancooler", 480: "yardsign"
+    };
+
+    var SLUG_TO_TYPE = {};
+    Object.keys(TYPE_TO_SLUG).forEach(function(type) {
+        SLUG_TO_TYPE[TYPE_TO_SLUG[type]] = type;
+    });
+
+    function getConfigs() {
+        try { return JSON.parse(localStorage.getItem("bulk-order-pending") || "[]"); }
+        catch(e) { return []; }
+    }
+
+    function saveConfigs(configs) {
+        try { localStorage.setItem("bulk-order-pending", JSON.stringify(configs)); }
+        catch(e) {}
+    }
+
+    function escapeHtml(str) {
+        var div = document.createElement("div");
+        div.textContent = str;
+        return div.innerHTML;
+    }
+
+    function removeOverlay() {
+        var el = document.getElementById("bulk-fixing-overlay");
+        if (el) {
+            el.classList.add("fade-out");
+            setTimeout(function() { el.remove(); }, 400);
+        }
+    }
+
+    function revealCart() {
+        document.documentElement.classList.remove("bulk-cart-hidden");
+        document.documentElement.classList.add("bulk-cart-visible");
+        removeOverlay();
+    }
+
+    function fixPricesIfNeeded() {
+        var configs = getConfigs();
+        if (!configs.length) {
+            revealCart();
+            return Promise.resolve(false);
+        }
+
+        return fetch("/api/storefront/carts", { credentials: "same-origin" })
+        .then(function(r) { return r.json(); })
+        .then(function(carts) {
+            if (!carts || !carts.length) {
+                console.log("[cart] No cart found");
+                revealCart();
+                return false;
+            }
+
+            var cart = carts[0];
+            var cartId = cart.id;
+            var physicalItems = (cart.lineItems && cart.lineItems.physicalItems) || [];
+
+            var itemsNeedingFix = physicalItems.filter(function(item) {
+                return BULK_PRODUCT_IDS.indexOf(item.productId) !== -1 &&
+                       (item.salePrice <= 0.02 || item.listPrice <= 0.02);
+            });
+
+            if (!itemsNeedingFix.length) {
+                console.log("[cart] All prices correct, enhancing display");
+                enhanceCart();
+                enhanceCartPreview();
+                revealCart();
+                return false;
+            }
+
+            console.log("[cart] Fixing " + itemsNeedingFix.length + " items at \$0.01");
+
+            var configsByType = {};
+            configs.forEach(function(c) {
+                var t = c.productType;
+                if (!configsByType[t]) configsByType[t] = [];
+                configsByType[t].push(c);
+            });
+
+            var fixPromises = [];
+            var msgPromises = [];
+
+            itemsNeedingFix.forEach(function(item) {
+                var productType = PRODUCT_ID_TO_TYPE[item.productId];
+                if (!productType) return;
+
+                var typeConfigs = configsByType[productType];
+                if (!typeConfigs || !typeConfigs.length) return;
+
+                var config = null;
+                for (var i = 0; i < typeConfigs.length; i++) {
+                    if (typeConfigs[i].needsPriceFix) {
+                        config = typeConfigs.splice(i, 1)[0];
+                        break;
+                    }
+                }
+                if (!config && typeConfigs.length) {
+                    config = typeConfigs.shift();
+                }
+                if (!config) return;
+
+                var price = parseFloat((config.fields["Quoted Price"] || "0").replace("$", ""));
+                if (!price || price <= 0) return;
+
+                console.log("[cart] Fix:", productType, item.id, "$0.01 -> $" + price);
+
+                fixPromises.push(
+                    fetch(PROXY_BASE + "/fix-price", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            cartId: cartId,
+                            lineItemId: item.id,
+                            price: price,
+                            productId: item.productId
+                        })
+                    })
+                    .then(function(r) { return r.json(); })
+                    .then(function(result) {
+                        console.log("[cart]", result.success ? "✅" : "❌", "Price:", productType);
+                        return result;
+                    })
+                    .catch(function(err) { console.error("[cart] Fix error:", err); })
+                );
+
+                msgPromises.push(
+                    fetch(PROXY_BASE + "/update-message", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            cartId: cartId,
+                            productType: productType,
+                            customFields: config.fields
+                        })
+                    })
+                    .then(function(r) { return r.json(); })
+                    .then(function(result) {
+                        console.log("[cart]", result.success ? "✅" : "❌", "Msg:", productType);
+                        return result;
+                    })
+                    .catch(function(err) { console.error("[cart] Msg error:", err); })
+                );
+            });
+
+            if (!fixPromises.length) {
+                enhanceCart();
+                enhanceCartPreview();
+                revealCart();
+                return false;
+            }
+
+            Promise.all(msgPromises).then(function() {
+                console.log("[cart] All messages sent");
+            });
+
+            return Promise.all(fixPromises).then(function(results) {
+                var updated = configs.map(function(c) {
+                    return Object.assign({}, c, { needsPriceFix: false });
+                });
+                saveConfigs(updated);
+
+                var anySuccess = results.some(function(r) { return r && r.success; });
+                if (anySuccess) {
+                    setTimeout(function() { window.location.reload(); }, 800);
+                    return true;
+                } else {
+                    enhanceCart();
+                    enhanceCartPreview();
+                    revealCart();
+                    return false;
+                }
+            });
+        })
+        .catch(function(err) {
+            console.error("[cart] Error:", err);
+            revealCart();
+            return false;
+        });
+    }
+
+    function buildDetailHTML(config) {
+        var fields = config.fields || {};
+        var productType = config.productType || "";
+
+        var h = '<div class="bulk-order-inline" data-bulk-injected="true">';
+        h += '<span class="order-badge">Custom ' + escapeHtml(productType) + ' order</span>';
+
+        if (config.artworkDataUrl || config.artworkDataUrl2) {
+            h += '<div class="artwork-thumbs">';
+            if (config.artworkDataUrl) {
+                h += '<div><img src="' + config.artworkDataUrl + '" alt="Front artwork">';
+                h += '<span class="thumb-label">Front</span></div>';
+            }
+            if (config.artworkDataUrl2) {
+                h += '<div><img src="' + config.artworkDataUrl2 + '" alt="Back artwork">';
+                h += '<span class="thumb-label">Back</span></div>';
+            }
+            h += '</div>';
+        }
+
+        h += '<div class="order-fields">';
+        var keys = Object.keys(fields);
+        for (var i = 0; i < keys.length; i++) {
+            var key = keys[i];
+            var value = fields[key];
+            if (SKIP_FIELDS.indexOf(key) !== -1) continue;
+            if (ALWAYS_SHOW_FIELDS.indexOf(key) !== -1 || value) {
+                h += '<span class="field-label">' + escapeHtml(key) + ':</span>';
+                h += '<span class="field-value">' + escapeHtml(value || "—") + '</span>';
+            }
+        }
+        h += '</div></div>';
+        return h;
+    }
+
+    function buildCompactHTML(config, dataAttr) {
+        var fields = config.fields || {};
+        var attr = dataAttr || "data-bulk-preview";
+        var h = '<div class="bulk-preview-details" ' + attr + '="true">';
+        var keys = Object.keys(fields);
+        var shown = 0;
+        for (var i = 0; i < keys.length; i++) {
+            var key = keys[i];
+            if (COMPACT_FIELDS.indexOf(key) !== -1 && fields[key]) {
+                h += '<span class="preview-field"><span class="preview-label">';
+                h += escapeHtml(key) + ':</span> ' + escapeHtml(fields[key]) + '</span>';
+                shown++;
+                if (shown >= 3) break;
+            }
+        }
+        h += '</div>';
+        return shown > 0 ? h : '';
+    }
+
+    function findAllCartRowsBySlug(slug) {
+        var rows = [];
+        var links = document.querySelectorAll("a.cart-item-name__label");
+        for (var i = 0; i < links.length; i++) {
+            var href = links[i].getAttribute("href") || "";
+            if (href.indexOf(slug) !== -1) {
+                var row = links[i].closest("tr.cart-item");
+                if (row) rows.push(row);
+            }
+        }
+        return rows;
+    }
+
+    function matchConfigsToRows(configs) {
+        var byType = {};
+        for (var i = 0; i < configs.length; i++) {
+            var type = configs[i].productType;
+            if (!byType[type]) byType[type] = [];
+            byType[type].push(configs[i]);
+        }
+
+        var matches = [];
+        Object.keys(byType).forEach(function(type) {
+            var slug = TYPE_TO_SLUG[type];
+            if (!slug) return;
+            var rows = findAllCartRowsBySlug(slug);
+            var typeConfigs = byType[type];
+            typeConfigs.sort(function(a, b) { return a.timestamp - b.timestamp; });
+            for (var j = 0; j < rows.length && j < typeConfigs.length; j++) {
+                matches.push({ config: typeConfigs[j], row: rows[j] });
+            }
+        });
+        return matches;
+    }
+
+    function enhanceCart() {
+        if (document.querySelector('[data-bulk-injected]')) return;
+
+        var configs = getConfigs();
+        if (!configs.length) return;
+
+        var matches = matchConfigsToRows(configs);
+        console.log("[cart] Enhancing " + matches.length + " rows");
+
+        for (var m = 0; m < matches.length; m++) {
+            var config = matches[m].config;
+            var row = matches[m].row;
+
+            row.setAttribute("data-bulk-order", "true");
+
+            var titleCell = row.querySelector("td.cart-item-title");
+            if (titleCell) {
+                var nameEl = titleCell.querySelector("h2.cart-item-name");
+                if (nameEl) {
+                    var detailDiv = document.createElement("div");
+                    detailDiv.innerHTML = buildDetailHTML(config);
+                    nameEl.insertAdjacentElement("afterend", detailDiv.firstElementChild);
+                }
+            }
+
+            var qtyCell = row.querySelector("td.cart-item-quantity");
+            if (qtyCell) {
+                var bulkQty = (config.fields || {})["Quantity"] ||
+                    (config.fields || {})["Quoted Quantity"] || "";
+                if (bulkQty) {
+                    var note = document.createElement("p");
+                    note.className = "bulk-qty-note";
+                    note.textContent = "Bulk qty: " + bulkQty + " units";
+                    qtyCell.appendChild(note);
+                }
+            }
+        }
+    }
+
+    function enhanceCartPreview() {
+        if (document.querySelector('[data-bulk-preview]')) return;
+        var configs = getConfigs();
+        if (!configs.length) return;
+
+        var previewItems = document.querySelectorAll('.previewCartItem');
+        if (!previewItems.length) {
+            var previewContainer = document.querySelector(
+                '.previewCartList, .navUser-item--cart .previewCart'
+            );
+            if (!previewContainer) return;
+            previewItems = previewContainer.querySelectorAll('li');
+        }
+        if (!previewItems.length) return;
+
+        var byType = {};
+        for (var i = 0; i < configs.length; i++) {
+            var type = configs[i].productType;
+            if (!byType[type]) byType[type] = [];
+            byType[type].push(configs[i]);
+        }
+
+        previewItems.forEach(function(item) {
+            var link = item.querySelector('a[href]');
+            if (!link) return;
+            var href = link.getAttribute("href") || "";
+            var matchedType = null;
+            Object.keys(SLUG_TO_TYPE).forEach(function(slug) {
+                if (href.indexOf(slug) !== -1) matchedType = SLUG_TO_TYPE[slug];
+            });
+            if (!matchedType || !byType[matchedType] || !byType[matchedType].length) return;
+            var config = byType[matchedType].shift();
+            if (!config) return;
+            var nameArea = item.querySelector(
+                '.previewCartItem-name, .previewCartItem-content, a'
+            );
+            if (nameArea) {
+                var compactHtml = buildCompactHTML(config, "data-bulk-preview");
+                if (compactHtml) {
+                    var div = document.createElement("div");
+                    div.innerHTML = compactHtml;
+                    nameArea.insertAdjacentElement("afterend", div.firstElementChild);
+                }
+            }
+        });
+    }
+
+    function init() {
+        console.log("[cart] Init");
+        fixPricesIfNeeded();
+    }
+
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", init);
+    } else {
+        init();
+    }
+
+    var target = document.querySelector("[data-cart-content]");
+    if (target) {
+        var debounceTimer;
+        var observer = new MutationObserver(function() {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(function() {
+                if (!document.querySelector('[data-bulk-injected]')) {
+                    enhanceCart();
+                }
+            }, 400);
+        });
+        observer.observe(target, { childList: true, subtree: true });
+    }
+
+    var cartDropdown = document.querySelector('.navUser-item--cart, [data-cart-preview]');
+    if (cartDropdown) {
+        var previewObserver = new MutationObserver(function() {
+            setTimeout(enhanceCartPreview, 200);
+        });
+        previewObserver.observe(cartDropdown, { childList: true, subtree: true });
+    }
+})();
+</script>
+
 {{/partial}}
 {{> layout/base}}

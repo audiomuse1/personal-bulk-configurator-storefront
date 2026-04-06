@@ -1,0 +1,486 @@
+---
+product:
+    videos:
+        limit: {{theme_settings.productpage_videos_count}}
+    reviews:
+        limit: {{theme_settings.productpage_reviews_count}}
+    related_products:
+        limit: {{theme_settings.productpage_related_products_count}}
+    similar_by_views:
+        limit: {{theme_settings.productpage_similar_by_views_count}}
+---
+{{inject 'productId' product.id}}
+
+{{#partial "page"}}
+
+<style>
+    .bulk-configurator-wrapper {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px 16px;
+    }
+    .bulk-configurator-wrapper h1 {
+        font-size: 28px;
+        font-weight: 700;
+        margin-bottom: 8px;
+        text-align: center;
+    }
+    .bulk-configurator-wrapper .product-desc {
+        color: #666;
+        line-height: 1.6;
+        margin-bottom: 24px;
+        text-align: center;
+    }
+    .bulk-configurator-layout {
+        display: grid;
+        grid-template-columns: 340px 1fr;
+        gap: 32px;
+        align-items: start;
+    }
+    @media (max-width: 900px) {
+        .bulk-configurator-layout {
+            grid-template-columns: 1fr;
+        }
+        .bulk-product-sidebar {
+            max-width: 400px;
+            margin: 0 auto;
+        }
+    }
+    .bulk-product-sidebar {
+        position: sticky;
+        top: 20px;
+    }
+    .bulk-product-image-wrap {
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        overflow: hidden;
+        background: #fff;
+        margin-bottom: 16px;
+    }
+    .bulk-product-image-wrap img {
+        width: 100%;
+        height: auto;
+        display: block;
+    }
+    .bulk-product-image-caption {
+        text-align: center;
+        font-size: 12px;
+        color: #999;
+        padding: 8px;
+        background: #fafafa;
+        border-top: 1px solid #e0e0e0;
+    }
+
+    /* ─── Print location preview ─── */
+    .bulk-print-preview-wrap {
+        border: 2px solid #4ecdc4;
+        border-radius: 8px;
+        overflow: hidden;
+        background: #fff;
+        margin-bottom: 16px;
+        transition: all 0.3s ease;
+    }
+    .bulk-print-preview-wrap .preview-header {
+        background: #4ecdc4;
+        color: white;
+        font-size: 12px;
+        font-weight: 700;
+        padding: 6px 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+    }
+    .bulk-print-preview-body {
+        transition: background-color 0.4s ease;
+    }
+    .bulk-print-preview-wrap img {
+        width: 100%;
+        height: auto;
+        display: block;
+    }
+    .bulk-print-preview-wrap .preview-label {
+        text-align: center;
+        font-size: 13px;
+        font-weight: 600;
+        color: #333;
+        padding: 8px;
+        background: #f0faf9;
+        border-top: 1px solid #e0e0e0;
+    }
+    .bulk-print-preview-placeholder {
+        padding: 40px 20px;
+        text-align: center;
+        color: #999;
+        font-size: 14px;
+        background: #fafafa;
+    }
+    .bulk-print-preview-placeholder .icon {
+        font-size: 48px;
+        display: block;
+        margin-bottom: 8px;
+    }
+
+    /* ─── Dual preview for "both" fit ─── */
+    .bulk-preview-dual {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0;
+    }
+    .bulk-preview-dual .preview-panel {
+        position: relative;
+        transition: background-color 0.4s ease;
+    }
+    .bulk-preview-dual .preview-panel img {
+        width: 100%;
+        height: auto;
+        display: block;
+    }
+    .bulk-preview-dual .preview-panel .panel-label {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        text-align: center;
+        font-size: 11px;
+        font-weight: 700;
+        color: white;
+        background: rgba(0,0,0,0.5);
+        padding: 4px 0;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+    }
+
+    /* ─── Single preview ─── */
+    .bulk-preview-single {
+        transition: background-color 0.4s ease;
+    }
+
+    .bulk-sidebar-info {
+        background: #f9f9f9;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        padding: 16px;
+        margin-bottom: 16px;
+    }
+    .bulk-sidebar-info h3 {
+        font-size: 14px;
+        font-weight: 700;
+        margin: 0 0 8px 0;
+        color: #333;
+    }
+    .bulk-sidebar-info ul {
+        margin: 0;
+        padding: 0 0 0 18px;
+        font-size: 13px;
+        color: #666;
+        line-height: 1.8;
+    }
+    bulk-configurator:not(:defined) {
+        display: flex;
+        min-height: 400px;
+        background: #f5f5f5;
+        border-radius: 8px;
+        align-items: center;
+        justify-content: center;
+    }
+    bulk-configurator:not(:defined)::before {
+        content: "Loading configurator...";
+        color: #999;
+        font-size: 16px;
+    }
+    bulk-configurator {
+        display: block;
+        width: 100%;
+    }
+</style>
+
+<div class="bulk-configurator-wrapper">
+
+    {{> components/common/breadcrumbs breadcrumbs=breadcrumbs}}
+
+    <h1>{{product.title}}</h1>
+
+    {{#if product.description}}
+    <div class="product-desc">
+        {{{product.description}}}
+    </div>
+    {{/if}}
+
+    <div class="bulk-configurator-layout">
+
+        <div class="bulk-product-sidebar" id="bulk-sidebar">
+
+            {{#if product.main_image}}
+            <div class="bulk-product-image-wrap" id="bulk-product-hero">
+                <img
+                    src="{{getImage product.main_image 'product_size' (cdn theme_settings.default_image_product)}}"
+                    alt="{{product.main_image.alt}}"
+                    title="{{product.title}}"
+                />
+                <div class="bulk-product-image-caption">{{product.title}}</div>
+            </div>
+            {{/if}}
+
+            <div class="bulk-print-preview-wrap" id="bulk-print-preview" style="display: none;">
+                <div class="preview-header">📐 Print Location Preview</div>
+                <div id="bulk-print-preview-body">
+                    <div class="bulk-print-preview-placeholder">
+                        <span class="icon">👕</span>
+                        Select a print location to see preview
+                    </div>
+                </div>
+                <div class="preview-label" id="bulk-print-preview-label">Select print location</div>
+            </div>
+
+            <div id="bulk-sidebar-extras"></div>
+
+        </div>
+
+        <div class="bulk-configurator-column">
+            <bulk-configurator
+                id="bulk-configurator"
+                productType="unknown"
+                productId="{{product.id}}"
+            ></bulk-configurator>
+        </div>
+
+    </div>
+
+</div>
+
+<script src="{{cdn 'assets/js/custom/bulk-configurator.js'}}"></script>
+
+<script>
+(function() {
+    var PRODUCT_TYPE_MAP = {
+        475: "tshirt",
+        476: "sticker",
+        477: "button",
+        478: "mug",
+        479: "cancooler",
+        480: "yardsign"
+    };
+
+    var PRINT_LOCATION_LABELS = {
+        "front-only":            "Full Front",
+        "back-only":             "Full Back",
+        "left-chest":            "Left Chest Front",
+        "right-chest":           "Right Chest Front",
+        "full-front-full-back":  "Full Front + Full Back",
+        "full-front-left-chest": "Full Front + Left Chest",
+        "right-chest-full-back": "Right Chest + Full Back"
+    };
+
+    var PRINT_LOCATION_BASE_PATH = "/assets/img/print-locations/";
+
+    var SIDEBAR_INFO = {
+        tshirt: {
+            title: "T-Shirt Printing",
+            items: [
+                "Screen printed, full color",
+                "Premium & standard garments",
+                "Unisex and women's cuts",
+                "Bulk pricing — more you order, more you save"
+            ]
+        },
+        sticker: {
+            title: "Custom Stickers",
+            items: [
+                "Full color, any shape",
+                "Weather-resistant vinyl",
+                "Matte or gloss finish",
+                "No minimum order"
+            ]
+        },
+        button: {
+            title: "Custom Buttons",
+            items: [
+                "Full color printing",
+                '2.25" and 3" sizes',
+                "Pin-back style",
+                "Bulk discounts available"
+            ]
+        },
+        mug: {
+            title: "Custom Mugs",
+            items: [
+                "Full color sublimation",
+                "11oz and 15oz sizes",
+                "USA-made and imported options",
+                "Gift box packaging available"
+            ]
+        },
+        cancooler: {
+            title: "Custom Can Coolers",
+            items: [
+                "Full color imprint",
+                "1-sided or 2-sided printing",
+                "30+ color options",
+                "Minimum order: 24 units"
+            ]
+        },
+        yardsign: {
+            title: "Custom Yard Signs",
+            items: [
+                '18" × 24" coroplast',
+                "Full color digital print",
+                "1-sided or 2-sided",
+                "H-stakes and I-stakes available"
+            ]
+        }
+    };
+
+    var configurator = document.getElementById("bulk-configurator");
+    if (!configurator) return;
+
+    var productId = parseInt(configurator.getAttribute("productId")) || 0;
+    var productType = PRODUCT_TYPE_MAP[productId] || "tshirt";
+
+    configurator.setAttribute("productType", productType);
+
+    // ─── Render sidebar info card ───
+    var extrasContainer = document.getElementById("bulk-sidebar-extras");
+    var sidebarInfo = SIDEBAR_INFO[productType];
+    if (sidebarInfo && extrasContainer) {
+        var infoHtml = '<div class="bulk-sidebar-info">';
+        infoHtml += '<h3>' + sidebarInfo.title + '</h3><ul>';
+        for (var i = 0; i < sidebarInfo.items.length; i++) {
+            infoHtml += '<li>' + sidebarInfo.items[i] + '</li>';
+        }
+        infoHtml += '</ul></div>';
+        extrasContainer.innerHTML = infoHtml;
+    }
+
+    // ─── T-shirt print location preview ───
+    var printPreview = document.getElementById("bulk-print-preview");
+    var printPreviewBody = document.getElementById("bulk-print-preview-body");
+    var printPreviewLabel = document.getElementById("bulk-print-preview-label");
+
+    var currentLocationId = "";
+    var currentFit = "";
+    var currentColorHex = "";
+
+    if (productType === "tshirt" && printPreview) {
+        printPreview.style.display = "block";
+    }
+
+    function buildImgTag(prefix, locationId, alt) {
+        var src = PRINT_LOCATION_BASE_PATH + prefix + "-" + locationId + ".png";
+        return '<img src="' + src + '" alt="' + alt + '" ' +
+            'onerror="this.style.display=\'none\'">';
+    }
+
+    function updatePrintPreview() {
+        if (!printPreviewBody || !printPreviewLabel) return;
+        if (productType !== "tshirt") return;
+
+        var locationLabel = PRINT_LOCATION_LABELS[currentLocationId];
+
+        // No location selected yet
+        if (!locationLabel) {
+            printPreviewBody.innerHTML =
+                '<div class="bulk-print-preview-placeholder">' +
+                '<span class="icon">👕</span>' +
+                'Select a print location to see preview</div>';
+            printPreviewBody.style.backgroundColor = "#fafafa";
+            printPreviewLabel.textContent = "Select print location";
+            return;
+        }
+
+        // No fit selected yet — show unisex as default
+        if (!currentFit) {
+            var bgColor = currentColorHex ? "#" + currentColorHex : "#fafafa";
+            printPreviewBody.style.backgroundColor = "";
+            printPreviewBody.innerHTML =
+                '<div class="bulk-preview-single" style="background-color: ' + bgColor + ';">' +
+                buildImgTag("unisex", currentLocationId, locationLabel + " (Unisex)") +
+                '</div>';
+            printPreviewLabel.textContent = locationLabel;
+            return;
+        }
+
+        var bgColor = currentColorHex ? "#" + currentColorHex : "#fafafa";
+
+        if (currentFit === "both") {
+            // Show BOTH unisex and women's side by side
+            printPreviewBody.style.backgroundColor = "";
+            printPreviewBody.innerHTML =
+                '<div class="bulk-preview-dual">' +
+                    '<div class="preview-panel" style="background-color: ' + bgColor + ';">' +
+                        buildImgTag("unisex", currentLocationId, locationLabel + " (Unisex)") +
+                        '<div class="panel-label">Unisex</div>' +
+                    '</div>' +
+                    '<div class="preview-panel" style="background-color: ' + bgColor + ';">' +
+                        buildImgTag("womens", currentLocationId, locationLabel + " (Women\'s)") +
+                        '<div class="panel-label">Women\'s</div>' +
+                    '</div>' +
+                '</div>';
+            printPreviewLabel.textContent = locationLabel + " (Unisex & Women's)";
+        } else if (currentFit === "womens") {
+            // Show women's only
+            printPreviewBody.style.backgroundColor = "";
+            printPreviewBody.innerHTML =
+                '<div class="bulk-preview-single" style="background-color: ' + bgColor + ';">' +
+                buildImgTag("womens", currentLocationId, locationLabel + " (Women's)") +
+                '</div>';
+            printPreviewLabel.textContent = locationLabel + " (Women's)";
+        } else {
+            // Show unisex only
+            printPreviewBody.style.backgroundColor = "";
+            printPreviewBody.innerHTML =
+                '<div class="bulk-preview-single" style="background-color: ' + bgColor + ';">' +
+                buildImgTag("unisex", currentLocationId, locationLabel + " (Unisex)") +
+                '</div>';
+            printPreviewLabel.textContent = locationLabel + " (Unisex)";
+        }
+    }
+
+    // ─── Listen for config-update from bulk-configurator ───
+    configurator.addEventListener("config-update", function(e) {
+        var detail = e.detail;
+        if (!detail) return;
+        if (productType !== "tshirt") return;
+
+        var needsUpdate = false;
+
+        // Track print location
+        if (detail.printLocationId !== undefined && detail.printLocationId !== currentLocationId) {
+            currentLocationId = detail.printLocationId;
+            needsUpdate = true;
+        }
+
+        // Track fit (garment style: unisex, womens, both)
+        if (detail.fit !== undefined && detail.fit !== currentFit) {
+            currentFit = detail.fit;
+            needsUpdate = true;
+        }
+
+        // Track color — detail.color is { name, hex, brightness }
+        if (detail.color && detail.color.hex) {
+            if (detail.color.hex !== currentColorHex) {
+                currentColorHex = detail.color.hex;
+                needsUpdate = true;
+            }
+        }
+
+        if (needsUpdate) {
+            updatePrintPreview();
+        }
+    });
+
+    // ─── Add-to-cart logging ───
+    configurator.addEventListener("add-to-cart", function(e) {
+        var detail = e.detail;
+        console.log("Bulk order added:", detail);
+
+        if (detail.customFields) {
+            console.log("Order details for production team:");
+            Object.entries(detail.customFields).forEach(function(entry) {
+                console.log("  " + entry[0] + ": " + entry[1]);
+            });
+        }
+    });
+})();
+</script>
+
+{{/partial}}
+{{> layout/base}}

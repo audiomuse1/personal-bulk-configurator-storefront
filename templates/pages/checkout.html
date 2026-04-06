@@ -10,6 +10,53 @@
 
 {{{head.scripts}}}
 
+<style>
+    .bulk-checkout-details {
+        margin: 4px 0 2px 0;
+        padding: 0;
+    }
+    .bulk-checkout-details .checkout-field {
+        display: block;
+        font-size: 12px;
+        line-height: 1.5;
+        color: #545454;
+    }
+    .bulk-checkout-details .checkout-field-label {
+        font-weight: 600;
+        color: #757575;
+    }
+    .bulk-checkout-details .checkout-badge {
+        display: inline-block;
+        background: #4ecdc4;
+        color: white;
+        font-size: 9px;
+        font-weight: 700;
+        padding: 1px 6px;
+        border-radius: 2px;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+        margin-bottom: 3px;
+    }
+    .bulk-checkout-details .checkout-thumbs {
+        display: flex;
+        gap: 4px;
+        margin: 3px 0;
+    }
+    .bulk-checkout-details .checkout-thumbs img {
+        width: 40px;
+        height: 40px;
+        object-fit: contain;
+        border-radius: 2px;
+        border: 1px solid #e0e0e0;
+    }
+    .bulk-checkout-details .checkout-thumbs .checkout-thumb-label {
+        font-size: 9px;
+        color: #999;
+        text-align: center;
+        display: block;
+    }
+</style>
+
 {{/partial}}
 
 {{#partial "page"}}
@@ -31,6 +78,188 @@
 {{{ checkout.checkout_content }}}
 
 {{{ footer.scripts }}}
+
+<script>
+(function() {
+    var SKIP_FIELDS = [
+        "Configurator Type", "Quoted Price", "Quoted Quantity",
+        "Artwork File", "Artwork File 2", "Artwork"
+    ];
+
+    var SLUG_TO_TYPE = {
+        "/custom-t-shirt-order/": "tshirt",
+        "/custom-sticker-order/": "sticker",
+        "/custom-button-order/": "button",
+        "/custom-mug-order/": "mug",
+        "/custom-can-cooler-order/": "cancooler",
+        "/custom-yard-sign-order/": "yardsign"
+    };
+
+    var PRODUCT_NAME_TO_TYPE = {
+        "Custom T-Shirt Order": "tshirt",
+        "Custom Sticker Order": "sticker",
+        "Custom Button Order": "button",
+        "Custom Mug Order": "mug",
+        "Custom Can Cooler Order": "cancooler",
+        "Custom Yard Sign Order": "yardsign"
+    };
+
+    function getConfigs() {
+        try { return JSON.parse(localStorage.getItem("bulk-order-pending") || "[]"); }
+        catch(e) { return []; }
+    }
+
+    function escapeHtml(str) {
+        var div = document.createElement("div");
+        div.textContent = str;
+        return div.innerHTML;
+    }
+
+    function buildCheckoutDetailHTML(config) {
+        var fields = config.fields || {};
+        var productType = config.productType || "";
+
+        var h = '<div class="bulk-checkout-details" data-bulk-checkout="true">';
+        h += '<span class="checkout-badge">' + escapeHtml(productType) + ' details</span>';
+
+        if (config.artworkDataUrl || config.artworkDataUrl2) {
+            h += '<div class="checkout-thumbs">';
+            if (config.artworkDataUrl) {
+                h += '<div><img src="' + config.artworkDataUrl + '" alt="Front">';
+                h += '<span class="checkout-thumb-label">Front</span></div>';
+            }
+            if (config.artworkDataUrl2) {
+                h += '<div><img src="' + config.artworkDataUrl2 + '" alt="Back">';
+                h += '<span class="checkout-thumb-label">Back</span></div>';
+            }
+            h += '</div>';
+        }
+
+        var keys = Object.keys(fields);
+        for (var i = 0; i < keys.length; i++) {
+            var key = keys[i];
+            if (SKIP_FIELDS.indexOf(key) === -1 && fields[key]) {
+                h += '<span class="checkout-field">';
+                h += '<span class="checkout-field-label">' + escapeHtml(key) + ':</span> ';
+                h += escapeHtml(fields[key]);
+                h += '</span>';
+            }
+        }
+
+        h += '</div>';
+        return h;
+    }
+
+    function enhanceCheckout() {
+        // Don't inject twice
+        if (document.querySelector('[data-bulk-checkout]')) return;
+
+        var configs = getConfigs();
+        if (!configs.length) return;
+
+        // Find product list items in the checkout order summary
+        var productItems = document.querySelectorAll('.productList-item');
+        if (!productItems.length) return;
+
+        // Group configs by type
+        var configsByType = {};
+        configs.forEach(function(c) {
+            var t = c.productType;
+            if (!configsByType[t]) configsByType[t] = [];
+            configsByType[t].push(c);
+        });
+
+        // Sort each type group by timestamp
+        Object.keys(configsByType).forEach(function(t) {
+            configsByType[t].sort(function(a, b) { return a.timestamp - b.timestamp; });
+        });
+
+        productItems.forEach(function(item) {
+            // Get the product title
+            var titleEl = item.querySelector('[data-test="cart-item-product-title"]');
+            if (!titleEl) return;
+            var titleText = titleEl.textContent || "";
+
+            // Match to product type by name
+            var matchedType = null;
+            Object.keys(PRODUCT_NAME_TO_TYPE).forEach(function(name) {
+                if (titleText.indexOf(name) !== -1) {
+                    matchedType = PRODUCT_NAME_TO_TYPE[name];
+                }
+            });
+
+            if (!matchedType) return;
+
+            var typeConfigs = configsByType[matchedType];
+            if (!typeConfigs || !typeConfigs.length) return;
+
+            var config = typeConfigs.shift();
+            if (!config) return;
+
+            // Find the product-body div to inject into
+            var productBody = item.querySelector('.product-body');
+            if (!productBody) {
+                // Fallback: inject after the product options
+                productBody = item.querySelector('.product-column.product-body') ||
+                    titleEl.parentElement;
+            }
+            if (!productBody) return;
+
+            // Hide the native BC options (Order ID, etc.) since we'll show better details
+            var nativeOptions = productBody.querySelector('[data-test="cart-item-product-options"]');
+            if (nativeOptions) {
+                nativeOptions.style.display = 'none';
+            }
+
+            // Inject our details
+            var detailDiv = document.createElement("div");
+            detailDiv.innerHTML = buildCheckoutDetailHTML(config);
+            productBody.appendChild(detailDiv.firstElementChild);
+        });
+
+        if (document.querySelector('[data-bulk-checkout]')) {
+            console.log("[checkout] Order details injected");
+        }
+    }
+
+    // The checkout is a React SPA — content loads asynchronously
+    // Poll until the product list appears, then enhance
+    var attempts = 0;
+    var maxAttempts = 60; // 30 seconds max
+
+    function tryEnhance() {
+        attempts++;
+        var productList = document.querySelector('.productList');
+
+        if (productList && productList.children.length > 0) {
+            enhanceCheckout();
+
+            // Also watch for re-renders (React may re-render the sidebar)
+            var observer = new MutationObserver(function() {
+                if (!document.querySelector('[data-bulk-checkout]')) {
+                    setTimeout(enhanceCheckout, 100);
+                }
+            });
+
+            var sidebar = document.querySelector('.layout-cart') || productList.parentElement;
+            if (sidebar) {
+                observer.observe(sidebar, { childList: true, subtree: true });
+            }
+        } else if (attempts < maxAttempts) {
+            setTimeout(tryEnhance, 500);
+        }
+    }
+
+    // Start polling after a short delay
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", function() {
+            setTimeout(tryEnhance, 500);
+        });
+    } else {
+        setTimeout(tryEnhance, 500);
+    }
+})();
+</script>
 
 {{/partial}}
 
