@@ -13,6 +13,12 @@
 //   4. Update checkout/_bulk-checkout.scss with hardcoded client colors
 //   5. Swap the @import in theme.scss
 //   6. Update config.json theme editor values
+//
+// SHADOW DOM NOTE:
+//   CSS custom properties pierce Shadow DOM boundaries. Tokens prefixed
+//   --bulk-card-* and --bulk-configurator-* are read by the <bulk-configurator>
+//   web component's internal styles. If the component doesn't reference them
+//   yet, add var(--bulk-card-*, fallback) in the bulk-configurator repo.
 // =============================================================================
 
 :root {
@@ -33,6 +39,20 @@
   // ── Typography ────────────────────────────────────────────────────────
   --bulk-font-display:               Georgia, serif;
   --bulk-font-body:                  Georgia, serif;
+  --bulk-font-size-base:             14px;
+  --bulk-font-size-sm:               13px;
+  --bulk-font-size-xs:               12px;
+  --bulk-font-size-lg:               16px;
+
+  // ── Shared UI tokens ──────────────────────────────────────────────────
+  --bulk-radius:                     8px;
+  --bulk-radius-sm:                  4px;
+  --bulk-border-color:               #e0e0e0;
+  --bulk-surface-bg:                 #ffffff;
+  --bulk-surface-muted:              #fafafa;
+  --bulk-surface-offset:             #f5f5f5;
+  --bulk-shadow-sm:                  0 1px 3px rgba(0, 0, 0, 0.08);
+  --bulk-shadow-md:                  0 2px 8px rgba(0, 0, 0, 0.1);
 
   // ── Header ────────────────────────────────────────────────────────────
   --bulk-header-bg:                  #000000;
@@ -52,4 +72,93 @@
   // ── Transitions ───────────────────────────────────────────────────────
   --bulk-transition-fast:            0.2s ease;
   --bulk-transition-base:            0.3s ease;
+
+  // ── Product Page ──────────────────────────────────────────────────────
+  --bulk-product-max-width:          1200px;
+  --bulk-product-gap:                32px;
+  --bulk-product-sidebar-width:      340px;
+
+  // Layout (the grid area behind sidebar + configurator)
+  --bulk-product-layout-bg:          transparent;
+  --bulk-product-layout-padding:     0;
+  --bulk-product-layout-radius:      0;
+
+  // Product title
+  --bulk-product-title-font:         var(--bulk-font-body);
+  --bulk-product-title-size:         28px;
+  --bulk-product-title-weight:       700;
+  --bulk-product-title-color:        var(--bulk-color-text-body);
+
+  // Product description
+  --bulk-product-desc-color:         var(--bulk-color-text-muted);
+  --bulk-product-desc-size:          var(--bulk-font-size-base);
+
+  // Breadcrumbs
+  --bulk-product-breadcrumb-color:   var(--bulk-color-text-muted);
+  --bulk-product-breadcrumb-link:    var(--bulk-color-accent-primary);
+  --bulk-product-breadcrumb-hover:   var(--bulk-color-accent-primary-dark);
+
+  // Sidebar: image card
+  --bulk-product-image-border:       var(--bulk-border-color);
+  --bulk-product-image-bg:           var(--bulk-surface-bg);
+  --bulk-product-image-radius:       var(--bulk-radius);
+  --bulk-product-caption-bg:         var(--bulk-surface-muted);
+  --bulk-product-caption-color:      var(--bulk-color-text-muted);
+
+  // Sidebar: info card
+  --bulk-product-info-bg:            var(--bulk-surface-muted);
+  --bulk-product-info-border:        var(--bulk-border-color);
+  --bulk-product-info-radius:        var(--bulk-radius);
+  --bulk-product-info-heading-color: var(--bulk-color-text-body);
+  --bulk-product-info-text-color:    var(--bulk-color-text-muted);
+
+  // Sidebar: print preview
+  --bulk-product-preview-accent:     var(--bulk-color-accent-primary);
+  --bulk-product-preview-label-bg:   #f0faf9;
+  --bulk-product-preview-label-color:var(--bulk-color-text-body);
+  --bulk-product-preview-radius:     var(--bulk-radius);
+
+  // Configurator column (the wrapper div around <bulk-configurator>)
+  --bulk-product-configurator-bg:    var(--bulk-surface-bg);
+  --bulk-product-configurator-padding: 20px;
+  --bulk-product-configurator-radius:var(--bulk-radius);
+  --bulk-product-configurator-shadow:var(--bulk-shadow-sm);
+
+  // Loading state
+  --bulk-product-loading-bg:         var(--bulk-surface-offset);
+  --bulk-product-loading-color:      var(--bulk-color-text-muted);
+
+  // ── Configurator Shadow DOM tokens ────────────────────────────────────
+  // These CSS custom properties pierce into the <bulk-configurator>
+  // Shadow DOM. The component must reference them as:
+  //   background: var(--bulk-card-bg, #ffffff);
+  // Change these here → instantly retheme the configurator internals.
+  // ──────────────────────────────────────────────────────────────────────
+  --bulk-configurator-bg:            var(--bulk-surface-bg);
+  --bulk-configurator-padding:       0px;
+  --bulk-configurator-font:          var(--bulk-font-body);
+  --bulk-configurator-text-color:    var(--bulk-color-text-body);
+  --bulk-configurator-text-muted:    var(--bulk-color-text-muted);
+  --bulk-configurator-accent:        var(--bulk-color-accent-primary);
+  --bulk-configurator-accent-dark:   var(--bulk-color-accent-primary-dark);
+
+  // Cards inside configurator
+  --bulk-card-bg:                    var(--bulk-surface-bg);
+  --bulk-card-border:                var(--bulk-border-color);
+  --bulk-card-radius:                var(--bulk-radius);
+  --bulk-card-shadow:                var(--bulk-shadow-sm);
+  --bulk-card-header-bg:             var(--bulk-surface-muted);
+  --bulk-card-header-color:          var(--bulk-color-text-body);
+  --bulk-card-body-bg:               var(--bulk-surface-bg);
+  --bulk-card-body-color:            var(--bulk-color-text-body);
+
+  // Buttons inside configurator
+  --bulk-btn-primary-bg:             var(--bulk-color-accent-primary);
+  --bulk-btn-primary-color:          var(--bulk-color-text-white);
+  --bulk-btn-primary-hover:          var(--bulk-color-accent-primary-dark);
+
+  // Quote bar
+  --bulk-quote-bg:                   var(--bulk-color-near-black);
+  --bulk-quote-color:                var(--bulk-color-text-white);
+  --bulk-quote-accent:               var(--bulk-color-accent-primary);
 }

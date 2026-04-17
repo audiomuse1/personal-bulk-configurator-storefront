@@ -78,7 +78,7 @@ Never put client colors on master
 File Reference — What Changes Per Client
 Only these files change when setting up a new store:
 
-File	What to change
+## Files	What to change
 assets/scss/custom/clients/_clientname.scss	:root CSS custom property overrides (colors, fonts)
 assets/scss/custom/checkout/_bulk-checkout.scss	Hardcoded checkout colors (can't use CSS vars)
 assets/scss/theme.scss	Swap @import "custom/clients/clientname"
@@ -140,8 +140,7 @@ The configurator's internal styles (step cards, buttons, color swatches) are
 controlled in the bulk-configurator repo via shared-styles.ts and
 individual step component files.
 
-Deploy Workflow
-bash
+
 # Local testing
 stencil start
 # Visit http://localhost:3000

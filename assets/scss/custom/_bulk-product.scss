@@ -1,0 +1,315 @@
+// =============================================================================
+// BULK PRODUCT PAGE STYLES
+// =============================================================================
+//
+// Styles for the custom product pages that embed the <bulk-configurator>
+// web component. These pages use:
+//   templates/pages/custom/product/bulk-configurator.html
+//
+// The configurator's INTERNAL styles live in Shadow DOM (bulk-configurator repo).
+// This file controls the PAGE LAYOUT around the configurator.
+//
+// EVERY visual property references a --bulk-* token from _bulk-theme-vars.scss.
+// Client branches only override tokens, never this file.
+//
+// SHADOW DOM STRATEGY:
+//   CSS custom properties cross the shadow boundary. We define --bulk-card-*
+//   and --bulk-configurator-* tokens on the host page. The <bulk-configurator>
+//   component reads them with fallbacks:
+//     background: var(--bulk-card-bg, #fff);
+//   This file also styles the <bulk-configurator> element itself (which is
+//   NOT in shadow DOM) to set background, padding, and pass variables down.
+// =============================================================================
+
+// -----------------------------------------------------------------------------
+// Hide the default Cornerstone product view on bulk configurator pages
+// -----------------------------------------------------------------------------
+
+.bulk-configurator-wrapper ~ .productView,
+.bulk-configurator-wrapper ~ #previewModal {
+    display: none !important;
+}
+
+// -----------------------------------------------------------------------------
+// Wrapper & Page Layout
+// -----------------------------------------------------------------------------
+
+.bulk-configurator-wrapper {
+    max-width: var(--bulk-product-max-width);
+    margin: 0 auto;
+    padding: 20px 16px;
+    // No background here — page bg comes from body via --bulk-color-bg-page.
+
+    // ── Breadcrumbs ──
+    .breadcrumbs {
+        margin-bottom: 12px;
+        font-size: var(--bulk-font-size-sm);
+
+        .breadcrumb {
+            color: var(--bulk-product-breadcrumb-color);
+        }
+
+        .breadcrumb a {
+            color: var(--bulk-product-breadcrumb-link);
+            text-decoration: none;
+            transition: color var(--bulk-transition-fast);
+
+            &:hover {
+                color: var(--bulk-product-breadcrumb-hover);
+                text-decoration: underline;
+            }
+        }
+    }
+
+    // ── Page title ──
+    h1 {
+        font-family: var(--bulk-product-title-font);
+        font-size: var(--bulk-product-title-size);
+        font-weight: var(--bulk-product-title-weight);
+        color: var(--bulk-product-title-color);
+        margin-bottom: 8px;
+        text-align: center;
+    }
+
+    // ── Product description ──
+    .product-desc {
+        color: var(--bulk-product-desc-color);
+        font-size: var(--bulk-product-desc-size);
+        line-height: 1.6;
+        margin-bottom: 24px;
+        text-align: center;
+    }
+}
+
+// -----------------------------------------------------------------------------
+// Two-Column Grid
+// -----------------------------------------------------------------------------
+
+.bulk-configurator-layout {
+    display: grid;
+    grid-template-columns: var(--bulk-product-sidebar-width) 1fr;
+    gap: var(--bulk-product-gap);
+    align-items: start;
+    background: var(--bulk-product-layout-bg);
+    padding: var(--bulk-product-layout-padding);
+    border-radius: var(--bulk-product-layout-radius);
+
+    @media (max-width: 900px) {
+        grid-template-columns: 1fr;
+        gap: 24px;
+    }
+}
+
+// -----------------------------------------------------------------------------
+// Left Sidebar
+// -----------------------------------------------------------------------------
+
+.bulk-product-sidebar {
+    position: sticky;
+    top: 20px;
+
+    @media (max-width: 900px) {
+        position: static;
+        max-width: 400px;
+        margin: 0 auto;
+    }
+}
+
+// ── Product hero image ──
+
+.bulk-product-image-wrap {
+    border: 2px solid var(--bulk-product-image-border);
+    border-radius: var(--bulk-product-image-radius);
+    overflow: hidden;
+    background: var(--bulk-product-image-bg);
+    margin-bottom: 16px;
+    box-shadow: var(--bulk-shadow-sm);
+
+    img {
+        width: 100%;
+        height: auto;
+        display: block;
+    }
+}
+
+.bulk-product-image-caption {
+    text-align: center;
+    font-size: var(--bulk-font-size-xs);
+    color: var(--bulk-product-caption-color);
+    padding: 8px;
+    background: var(--bulk-product-caption-bg);
+    border-top: 1px solid var(--bulk-product-image-border);
+}
+
+// -----------------------------------------------------------------------------
+// Print Location Preview (T-shirts)
+// -----------------------------------------------------------------------------
+
+.bulk-print-preview-wrap {
+    border: 2px solid var(--bulk-product-preview-accent);
+    border-radius: var(--bulk-product-preview-radius);
+    overflow: hidden;
+    background: var(--bulk-product-image-bg);
+    margin-bottom: 16px;
+    transition: all var(--bulk-transition-base);
+    box-shadow: var(--bulk-shadow-sm);
+
+    .preview-header {
+        background: var(--bulk-product-preview-accent);
+        color: var(--bulk-color-text-white);
+        font-size: var(--bulk-font-size-xs);
+        font-weight: 700;
+        padding: 6px 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+    }
+
+    img {
+        width: 100%;
+        height: auto;
+        display: block;
+    }
+
+    .preview-label {
+        text-align: center;
+        font-size: var(--bulk-font-size-sm);
+        font-weight: 600;
+        color: var(--bulk-product-preview-label-color);
+        padding: 8px;
+        background: var(--bulk-product-preview-label-bg);
+        border-top: 1px solid var(--bulk-product-image-border);
+    }
+}
+
+.bulk-print-preview-body {
+    transition: background-color 0.4s ease;
+}
+
+.bulk-print-preview-placeholder {
+    padding: 40px 20px;
+    text-align: center;
+    color: var(--bulk-product-loading-color);
+    font-size: var(--bulk-font-size-base);
+    background: var(--bulk-product-loading-bg);
+
+    .icon {
+        font-size: 48px;
+        display: block;
+        margin-bottom: 8px;
+    }
+}
+
+// ── Dual preview (both fits side by side) ──
+
+.bulk-preview-dual {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+
+    .preview-panel {
+        position: relative;
+        transition: background-color 0.4s ease;
+
+        img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .panel-label {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            text-align: center;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--bulk-color-text-white);
+            background: rgba(0, 0, 0, 0.5);
+            padding: 4px 0;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+    }
+}
+
+// ── Single preview ──
+
+.bulk-preview-single {
+    transition: background-color 0.4s ease;
+}
+
+// -----------------------------------------------------------------------------
+// Sidebar Info Card
+// -----------------------------------------------------------------------------
+
+.bulk-sidebar-info {
+    background: var(--bulk-product-info-bg);
+    border: 1px solid var(--bulk-product-info-border);
+    border-radius: var(--bulk-product-info-radius);
+    padding: 16px;
+    margin-bottom: 16px;
+    box-shadow: var(--bulk-shadow-sm);
+
+    h3 {
+        font-size: var(--bulk-font-size-base);
+        font-weight: 700;
+        margin: 0 0 8px 0;
+        color: var(--bulk-product-info-heading-color);
+    }
+
+    ul {
+        margin: 0;
+        padding: 0 0 0 18px;
+        font-size: var(--bulk-font-size-sm);
+        color: var(--bulk-product-info-text-color);
+        line-height: 1.8;
+    }
+}
+
+// -----------------------------------------------------------------------------
+// Configurator Column (the div wrapping <bulk-configurator>)
+// -----------------------------------------------------------------------------
+
+.bulk-configurator-column {
+    min-width: 0; // Prevent grid blowout
+    background: var(--bulk-product-configurator-bg);
+    border-radius: var(--bulk-product-configurator-radius);
+    padding: var(--bulk-product-configurator-padding);
+    box-shadow: var(--bulk-product-configurator-shadow);
+}
+
+// -----------------------------------------------------------------------------
+// <bulk-configurator> element styling
+// -----------------------------------------------------------------------------
+// This element is in the light DOM (not shadow). We can style it directly.
+// It serves as the bridge: CSS custom properties set here cascade INTO
+// the Shadow DOM, where the component reads them as var(--bulk-card-bg, #fff).
+// -----------------------------------------------------------------------------
+
+bulk-configurator {
+    display: block;
+    width: 100%;
+    background: var(--bulk-configurator-bg);
+    padding: var(--bulk-configurator-padding);
+    font-family: var(--bulk-configurator-font);
+    color: var(--bulk-configurator-text-color);
+    border-radius: var(--bulk-radius);
+}
+
+// ── Loading state (before component defined) ──
+
+bulk-configurator:not(:defined) {
+    display: flex;
+    min-height: 400px;
+    background: var(--bulk-product-loading-bg);
+    border-radius: var(--bulk-radius);
+    align-items: center;
+    justify-content: center;
+
+    &::before {
+        content: "Loading configurator...";
+        color: var(--bulk-product-loading-color);
+        font-size: var(--bulk-font-size-lg);
+    }
+}

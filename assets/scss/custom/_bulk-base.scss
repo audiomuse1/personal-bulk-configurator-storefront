@@ -1,7 +1,29 @@
 // =============================================================================
 // BULK BASE STYLES
 // =============================================================================
+//
+// Global overrides that apply site-wide. Sets the base font and background
+// so all pages inherit from our token system instead of Cornerstone defaults.
+//
+// Cornerstone uses Karla/Arial from config.json by default. We override at
+// the body level so our font tokens win everywhere without repeating per-element.
+// =============================================================================
 
+// ── Body ──
+body {
+  font-family: var(--bulk-font-body);
+  font-size: var(--bulk-font-size-base);
+  color: var(--bulk-color-text-body);
+  background-color: var(--bulk-color-bg-page);
+}
+
+// ── Headings cascade ──
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--bulk-font-body);
+  color: var(--bulk-color-text-body);
+}
+
+// ── Links ──
 a {
-  transition: color 0.2s ease;
+  transition: color var(--bulk-transition-fast);
 }
