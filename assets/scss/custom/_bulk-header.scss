@@ -1,0 +1,183 @@
+// =============================================================================
+// BULK HEADER STYLES
+// =============================================================================
+//
+// All values reference CSS custom properties from _bulk-theme-vars.scss.
+// Client branches only need to override the variables, not this file.
+// =============================================================================
+
+.header {
+  background-color: var(--bulk-header-bg) !important;
+  border-bottom: none !important;
+}
+
+.header-logo-text {
+  font-family: var(--bulk-font-body);
+  color: var(--bulk-header-text) !important;
+  font-size: 14px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.header-logo__link {
+  color: var(--bulk-header-text) !important;
+
+  &:hover {
+    color: var(--bulk-color-accent-primary) !important;
+  }
+}
+
+.header-logo {
+  @media (min-width: 801px) {
+    margin-top: 1rem;
+    margin-bottom: 0.75rem;
+  }
+}
+
+// ── Nav user (SEARCH, SIGN IN, CART) ────────────────────────────────────
+.navUser {
+  .navUser-action {
+    color: var(--bulk-header-text) !important;
+    font-family: var(--bulk-font-body);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    transition: color 0.2s ease;
+
+    &:hover {
+      color: var(--bulk-color-accent-primary) !important;
+    }
+  }
+
+  .navUser-item--cart {
+    .navUser-action {
+      color: var(--bulk-header-text) !important;
+
+      &:hover {
+        color: var(--bulk-color-accent-primary) !important;
+      }
+    }
+  }
+
+  .countPill {
+    background-color: var(--bulk-color-accent-primary);
+    color: #fff;
+    font-family: var(--bulk-font-body);
+    font-size: 11px;
+    font-weight: 700;
+  }
+}
+
+.navUser .icon {
+  svg {
+    fill: var(--bulk-header-text);
+    transition: fill 0.2s ease;
+  }
+
+  &:hover svg {
+    fill: var(--bulk-color-accent-primary);
+  }
+}
+
+// ── Main navigation bar ─────────────────────────────────────────────────
+.navPages-container {
+  background-color: var(--bulk-header-nav-bg) !important;
+}
+
+.navPages {
+  background-color: var(--bulk-header-nav-bg) !important;
+}
+
+.navPages-action {
+  color: var(--bulk-header-nav-text) !important;
+  font-family: var(--bulk-font-body);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.75rem 1.25rem;
+  transition: background-color 0.2s ease, color 0.2s ease;
+
+  &:hover {
+    color: var(--bulk-header-nav-text) !important;
+    background-color: var(--bulk-header-nav-hover);
+  }
+}
+
+.navPages-action.is-open,
+.navPages-action--active {
+  background-color: var(--bulk-header-nav-hover);
+  color: var(--bulk-header-nav-text) !important;
+}
+
+.navPages-action-moreIcon {
+  svg {
+    fill: var(--bulk-header-nav-text);
+  }
+}
+
+// ── Dropdown submenus ───────────────────────────────────────────────────
+.navPage-subMenu {
+  background-color: #fff !important;
+  border: 1px solid #e5e5e5;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+
+  .navPage-subMenu-action {
+    color: var(--bulk-color-text-body) !important;
+    font-family: var(--bulk-font-body);
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    text-transform: none;
+    padding: 0.5rem 1.25rem;
+    transition: background-color 0.15s ease, color 0.15s ease;
+
+    &:hover {
+      color: var(--bulk-color-accent-primary) !important;
+      background-color: #f5f5f5;
+    }
+  }
+}
+
+// ── Mobile menu ─────────────────────────────────────────────────────────
+.mobileMenu-toggle {
+  .mobileMenu-toggleIcon,
+  .mobileMenu-toggleIcon::before,
+  .mobileMenu-toggleIcon::after {
+    background: var(--bulk-header-text);
+  }
+}
+
+@media (max-width: 800px) {
+  .navPages-container {
+    background-color: var(--bulk-header-bg) !important;
+  }
+
+  .navPages {
+    background-color: var(--bulk-header-bg) !important;
+  }
+
+  .navPages-action {
+    color: #fff !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.08);
+    }
+  }
+
+  .navPage-subMenu {
+    background-color: var(--bulk-color-near-black) !important;
+    border: none;
+    box-shadow: none;
+
+    .navPage-subMenu-action {
+      color: #ccc !important;
+
+      &:hover {
+        color: var(--bulk-color-accent-primary) !important;
+      }
+    }
+  }
+}

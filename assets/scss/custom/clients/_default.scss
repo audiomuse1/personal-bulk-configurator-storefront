@@ -1,0 +1,49 @@
+// =============================================================================
+// CLIENT: DEFAULT — No overrides
+// =============================================================================
+//
+// Uses neutral defaults from _bulk-theme-vars.scss.
+// This file exists so theme.scss always has a valid import.
+//
+// ┌─────────────────────────────────────────────────────────────────┐
+// │  NEW CLIENT CHECKLIST                                           │
+// │                                                                 │
+// │  1. git checkout master && git checkout -b store/clientname     │
+// │  2. cp clients/_default.scss → clients/_clientname.scss         │
+// │  3. Fill in :root with brand colors                             │
+// │  4. Update checkout/_bulk-checkout.scss (hardcoded colors)      │
+// │  5. In theme.scss: change @import "custom/clients/default"      │
+// │     to @import "custom/clients/clientname"                      │
+// │  6. Update config.json:                                         │
+// │     - optimizedCheckout-* color values                          │
+// │     - header-backgroundColor, footer-backgroundColor            │
+// │     - body-bg                                                   │
+// │     - homepage_show_carousel                                    │
+// │  7. Update config.stencil.json:                                 │
+// │     - normalStoreUrl for the client's store                     │
+// │     - product URL slugs in customLayouts                        │
+// │  8. Optional: update footer.html tagline text                   │
+// │  9. Optional: add @font-face declarations                       │
+// │                                                                 │
+// │  Files that change per client:                                  │
+// │    clients/_clientname.scss        (CSS custom property values)  │
+// │    checkout/_bulk-checkout.scss    (hardcoded checkout colors)   │
+// │    theme.scss                      (swap client import)          │
+// │    config.json                     (theme editor values)         │
+// │    config.stencil.json             (store URL + product slugs)   │
+// │    footer.html                     (tagline text, optional)      │
+// └─────────────────────────────────────────────────────────────────┘
+// =============================================================================
+
+// :root {
+//   --bulk-color-accent-primary:       #yourcolor;
+//   --bulk-color-accent-primary-dark:  #yourcolor;
+//   --bulk-color-accent-secondary:     #yourcolor;
+//   --bulk-color-accent-secondary-dark:#yourcolor;
+//   --bulk-color-bg-page:              #yourcolor;
+//   --bulk-font-display:               'YourDisplayFont', serif;
+//   --bulk-font-body:                  'YourBodyFont', serif;
+//   --bulk-header-nav-bg:              #yourcolor;
+//   --bulk-header-nav-hover:           #yourcolor;
+//   --bulk-footer-link-hover:          #yourcolor;
+// }

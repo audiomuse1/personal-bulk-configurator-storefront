@@ -1,0 +1,299 @@
+// =============================================================================
+// BULK CHECKOUT — Generic Defaults
+// =============================================================================
+//
+// NOTE: Compiled separately from theme.scss — CSS custom properties
+// from _bulk-theme-vars are NOT available here.
+// All values MUST be hardcoded.
+//
+// Each client branch replaces the color values in this file.
+//
+// Default palette (neutral):
+//   Primary:    #0088cc / #006699
+//   Error:      #cc4444
+//   Page bg:    #ffffff
+//   Header:     #000000
+// =============================================================================
+
+*:focus {
+  outline-color: #0088cc;
+}
+
+.optimizedCheckout-header {
+  background-color: #000000;
+  background-image: none;
+  border-color: #000000;
+  color: #ffffff;
+}
+
+.optimizedCheckout-headingPrimary {
+  color: #222222;
+  font-family: Georgia, serif;
+  font-weight: 700;
+}
+
+.optimizedCheckout-headingSecondary {
+  color: #333333;
+  font-family: Georgia, serif;
+  font-weight: 500;
+}
+
+body {
+  background-color: #ffffff;
+}
+
+.optimizedCheckout-overlay {
+  background-color: #ffffff;
+  border-color: #e0e0e0;
+  color: #333333;
+}
+
+.optimizedCheckout-contentPrimary {
+  color: #333333;
+  font-family: Georgia, serif;
+  font-weight: 500;
+}
+
+.optimizedCheckout-contentSecondary {
+  color: #666666;
+  font-family: Georgia, serif;
+  font-weight: 400;
+}
+
+.optimizedCheckout-buttonPrimary {
+  background-color: #0088cc;
+  border-color: #0088cc;
+  color: #ffffff;
+  font-family: Georgia, serif;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  border-radius: 4px;
+
+  &:focus,
+  &:hover {
+    background-color: #006699;
+    border-color: #006699;
+    color: #ffffff;
+  }
+
+  &:focus {
+    border-color: #006699;
+    box-shadow: 0 0 3px rgba(0, 136, 204, 0.5);
+  }
+
+  &:active {
+    background-color: #005580;
+    border-color: #005580;
+    color: #ffffff;
+  }
+
+  &[disabled],
+  &[disabled]:hover,
+  &[disabled]:focus,
+  &[disabled].is-active,
+  &[disabled].is-loading,
+  &[disabled].active {
+    background-color: #cccccc;
+    border-color: #cccccc;
+    color: #ffffff;
+  }
+}
+
+.optimizedCheckout-buttonSecondary {
+  background-color: #ffffff;
+  border-color: #0088cc;
+  color: #0088cc;
+  font-family: Georgia, serif;
+  font-weight: 500;
+  border-radius: 4px;
+
+  &:focus,
+  &:hover {
+    background-color: #f0f8ff;
+    border-color: #006699;
+    color: #006699;
+  }
+
+  &:focus {
+    border-color: #0088cc;
+    box-shadow: 0 0 3px rgba(0, 136, 204, 0.4);
+  }
+
+  &:active {
+    background-color: #e0f0ff;
+    border-color: #006699;
+    color: #006699;
+  }
+
+  &[disabled],
+  &[disabled]:hover,
+  &[disabled]:focus,
+  &[disabled].is-active,
+  &[disabled].is-loading,
+  &[disabled].active {
+    background-color: #cccccc;
+    border-color: #cccccc;
+    color: #ffffff;
+  }
+}
+
+a {
+  color: #006699;
+  font-family: Georgia, serif;
+  font-weight: 500;
+
+  &:focus,
+  &:hover {
+    color: #0088cc;
+  }
+}
+
+.optimizedCheckout-orderSummary {
+  background-color: #ffffff;
+  border-color: #e0e0e0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.optimizedCheckout-orderSummary-cartSection {
+  border-color: #eeeeee;
+}
+
+.optimizedCheckout-checkoutStep {
+  border-color: #e0e0e0;
+}
+
+.optimizedCheckout-step {
+  background-color: #0088cc;
+
+  &::before {
+    color: #ffffff;
+  }
+
+  svg {
+    fill: #ffffff;
+  }
+}
+
+.optimizedCheckout-form-label {
+  color: #444444;
+}
+
+.form-field--error {
+  .optimizedCheckout-form-label,
+  .form-inlineMessage {
+    color: #cc4444;
+  }
+}
+
+$bc-input-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.04);
+$bc-focus-shadow: 0 0 3px rgba(0, 136, 204, 0.4);
+$bc-error-shadow: 0 0 3px rgba(204, 68, 68, 0.4);
+
+.optimizedCheckout-form-input,
+.optimizedCheckout-form-select {
+  background-color: #ffffff;
+  border-color: #cccccc;
+  box-shadow: $bc-input-shadow;
+  color: #333333;
+  border-radius: 4px;
+
+  &::placeholder {
+    color: #999999;
+  }
+
+  .form-field--error & {
+    background-color: #fffafa;
+    border-color: #cc4444;
+    box-shadow: $bc-error-shadow, $bc-input-shadow;
+  }
+}
+
+.optimizedCheckout-form-input:focus,
+.optimizedCheckout-form-select:focus,
+.optimizedCheckout-form-select:hover {
+  background-color: #ffffff;
+  border-color: #0088cc;
+  box-shadow: $bc-focus-shadow, $bc-input-shadow;
+}
+
+.optimizedCheckout-form-label::before {
+  .optimizedCheckout-form-radio + &,
+  .optimizedCheckout-form-checkbox + & {
+    background-color: #ffffff;
+    border-color: #cccccc;
+    box-shadow: $bc-input-shadow;
+    opacity: 1;
+  }
+
+  .optimizedCheckout-form-radio:checked + &,
+  .optimizedCheckout-form-checkbox:checked + & {
+    background-color: #0088cc;
+    border-color: #0088cc;
+    box-shadow: none;
+  }
+
+  .optimizedCheckout-form-radio:focus + &,
+  .optimizedCheckout-form-checkbox:focus + & {
+    border-color: #0088cc;
+    box-shadow: $bc-focus-shadow, $bc-input-shadow;
+  }
+
+  .optimizedCheckout-form-radio:focus:checked + &,
+  .optimizedCheckout-form-checkbox:focus:checked + & {
+    box-shadow: $bc-focus-shadow;
+  }
+}
+
+.optimizedCheckout-discountBanner {
+  background-color: #f0f8ff;
+  color: #333333;
+  font-family: Georgia, serif;
+  font-weight: 500;
+
+  svg {
+    fill: #0088cc;
+  }
+}
+
+.optimizedCheckout-form-checklist {
+  background-color: #ffffff;
+  border-color: #e0e0e0;
+  color: #333333;
+}
+
+.optimizedCheckout-form-checklist-item {
+  background-color: #ffffff;
+  border-color: #e0e0e0;
+}
+
+.optimizedCheckout-form-checklist-item:hover,
+.optimizedCheckout-form-checklist-item--selected {
+  background-color: #f0f8ff;
+  border-color: #0088cc;
+}
+
+.optimizedCheckout-form-checklist-checkbox {
+  ~ .form-label::after,
+  ~ .form-label::before {
+    background-color: #ffffff;
+    border-color: #cccccc;
+  }
+
+  &:focus ~ .form-label {
+    box-shadow: inset 0 0 0 1px #0088cc;
+  }
+
+  &:checked ~ .form-label::before {
+    border-color: #0088cc;
+  }
+
+  &:checked ~ .form-label::after {
+    background: #0088cc;
+  }
+}
+
+.optimizedCheckout-loadingToaster {
+  background-color: #000000;
+  color: #ffffff;
+}

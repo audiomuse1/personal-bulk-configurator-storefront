@@ -77,3 +77,22 @@
 // -----------------------------------------------------------------------------
 
 @import "layouts/layouts"; // 1
+
+// =============================================================================
+// BULK CONFIGURATOR CLIENT THEME
+// =============================================================================
+//
+// Client-specific theming for the bulk configurator storefront.
+// To switch clients: change the client import below.
+//
+// Adding a new client:
+//   1. Create assets/scss/custom/clients/_newclient.scss
+//   2. Change the @import line below
+//   3. Update footer.html if brand tagline differs
+// =============================================================================
+
+@import "custom/bulk-theme-vars";
+@import "custom/clients/default";
+@import "custom/bulk-base";
+@import "custom/bulk-header";
+@import "custom/bulk-footer";
