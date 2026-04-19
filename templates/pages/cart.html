@@ -76,76 +76,6 @@ cart: true
     </div>
 </div>
 
-<style>
-    .bulk-fixing-overlay {
-        position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-        background: rgba(255,255,255,0.97); z-index: 9999;
-        display: flex; flex-direction: column; align-items: center; justify-content: center;
-        font-size: 18px; font-weight: 600; color: #333; transition: opacity 0.4s ease;
-    }
-    .bulk-fixing-overlay.fade-out { opacity: 0; pointer-events: none; }
-    .bulk-fixing-overlay .spinner {
-        width: 40px; height: 40px; border: 4px solid #e0e0e0; border-top-color: #4ecdc4;
-        border-radius: 50%; animation: spin 0.8s linear infinite; margin-bottom: 16px;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
-    .bulk-cart-hidden [data-cart-content], .bulk-cart-hidden [data-cart-totals],
-    .bulk-cart-hidden .cart-actions, .bulk-cart-hidden [data-cart-additional-checkout-buttons],
-    .bulk-cart-hidden [data-cart-coupons] { opacity: 0 !important; transition: opacity 0.3s ease; }
-    .bulk-cart-visible [data-cart-content], .bulk-cart-visible [data-cart-totals],
-    .bulk-cart-visible .cart-actions, .bulk-cart-visible [data-cart-additional-checkout-buttons],
-    .bulk-cart-visible [data-cart-coupons] { opacity: 1 !important; transition: opacity 0.3s ease; }
-    .bulk-order-inline { margin: 10px 0 4px 0; padding: 0; }
-    .bulk-order-inline .order-badge {
-        display: inline-block; background: #4ecdc4; color: white; font-size: 10px;
-        font-weight: 700; padding: 2px 8px; border-radius: 3px; margin-bottom: 6px;
-        text-transform: uppercase; letter-spacing: 0.3px;
-    }
-    .bulk-order-inline .order-fields {
-        display: grid; grid-template-columns: auto 1fr; gap: 2px 10px;
-        font-size: 13px; line-height: 1.6;
-    }
-    .bulk-order-inline .field-label { color: #666; font-weight: 600; white-space: nowrap; }
-    .bulk-order-inline .field-value { color: #333; font-weight: 400; }
-    .bulk-order-inline .artwork-thumbs { display: flex; gap: 6px; margin: 6px 0 2px 0; }
-    .bulk-order-inline .artwork-thumbs img {
-        width: 60px; height: 60px; object-fit: contain; border-radius: 3px;
-        border: 1px solid #e0e0e0; background: #fafafa;
-    }
-    .bulk-order-inline .artwork-thumbs .thumb-label { font-size: 10px; color: #999; text-align: center; display: block; }
-    .bulk-artwork-override { width: 100%; max-width: 100%; height: auto; object-fit: contain; border-radius: 4px; }
-    .cart-item[data-bulk-order] .form-increment button { visibility: hidden; }
-    .cart-item[data-bulk-order] .cart-item-qty-input { pointer-events: none; opacity: 0.6; }
-    .cart-item[data-bulk-order] .definitionList {
-        display: grid !important; grid-template-columns: auto 1fr !important;
-        gap: 2px 10px !important; font-size: 13px !important; line-height: 1.6 !important;
-        margin: 2px 0 0 0 !important; padding: 0 !important; border: none !important;
-        list-style: none !important; overflow: visible !important;
-    }
-    .cart-item[data-bulk-order] .definitionList::after,
-    .cart-item[data-bulk-order] .definitionList::before { display: none !important; }
-    .cart-item[data-bulk-order] .definitionList dt,
-    .cart-item[data-bulk-order] .definitionList .definitionList-key {
-        color: #666 !important; font-weight: 600 !important; white-space: nowrap !important;
-        margin: 0 !important; padding: 0 !important; float: none !important;
-        width: auto !important; clear: none !important; display: block !important;
-    }
-    .cart-item[data-bulk-order] .definitionList dd,
-    .cart-item[data-bulk-order] .definitionList .definitionList-value {
-        color: #333 !important; font-weight: 400 !important; margin: 0 !important;
-        padding: 0 !important; float: none !important; display: block !important;
-    }
-    .cart-item[data-bulk-order] .definitionList dd a,
-    .cart-item[data-bulk-order] .definitionList .definitionList-value a {
-        color: #2b6cb0 !important; text-decoration: underline !important; font-weight: 400 !important;
-    }
-    .cart-item[data-bulk-order] a[data-item-edit] { display: none !important; }
-    .bulk-qty-note { font-size: 11px; color: #888; margin-top: 4px; font-style: italic; }
-    .bulk-preview-details { font-size: 11px; color: #666; margin-top: 4px; line-height: 1.4; }
-    .bulk-preview-details .preview-field { display: block; }
-    .bulk-preview-details .preview-label { font-weight: 600; color: #888; }
-</style>
-
 <script>
 (function() {
     try {
@@ -254,7 +184,6 @@ cart: true
             if (!itemsNeedingFix.length) {
                 console.log("[cart] All prices correct, enhancing display");
                 enhanceCart();
-                enhanceCartPreview();
                 revealCart();
                 return false;
             }
@@ -335,7 +264,6 @@ cart: true
 
             if (!fixPromises.length) {
                 enhanceCart();
-                enhanceCartPreview();
                 revealCart();
                 return false;
             }
@@ -356,7 +284,6 @@ cart: true
                     return true;
                 } else {
                     enhanceCart();
-                    enhanceCartPreview();
                     revealCart();
                     return false;
                 }
@@ -402,25 +329,6 @@ cart: true
         }
         h += '</div></div>';
         return h;
-    }
-
-    function buildCompactHTML(config, dataAttr) {
-        var fields = config.fields || {};
-        var attr = dataAttr || "data-bulk-preview";
-        var h = '<div class="bulk-preview-details" ' + attr + '="true">';
-        var keys = Object.keys(fields);
-        var shown = 0;
-        for (var i = 0; i < keys.length; i++) {
-            var key = keys[i];
-            if (COMPACT_FIELDS.indexOf(key) !== -1 && fields[key]) {
-                h += '<span class="preview-field"><span class="preview-label">';
-                h += escapeHtml(key) + ':</span> ' + escapeHtml(fields[key]) + '</span>';
-                shown++;
-                if (shown >= 3) break;
-            }
-        }
-        h += '</div>';
-        return shown > 0 ? h : '';
     }
 
     function findAllCartRowsBySlug(slug) {
@@ -497,53 +405,6 @@ cart: true
         }
     }
 
-    function enhanceCartPreview() {
-        if (document.querySelector('[data-bulk-preview]')) return;
-        var configs = getConfigs();
-        if (!configs.length) return;
-
-        var previewItems = document.querySelectorAll('.previewCartItem');
-        if (!previewItems.length) {
-            var previewContainer = document.querySelector(
-                '.previewCartList, .navUser-item--cart .previewCart'
-            );
-            if (!previewContainer) return;
-            previewItems = previewContainer.querySelectorAll('li');
-        }
-        if (!previewItems.length) return;
-
-        var byType = {};
-        for (var i = 0; i < configs.length; i++) {
-            var type = configs[i].productType;
-            if (!byType[type]) byType[type] = [];
-            byType[type].push(configs[i]);
-        }
-
-        previewItems.forEach(function(item) {
-            var link = item.querySelector('a[href]');
-            if (!link) return;
-            var href = link.getAttribute("href") || "";
-            var matchedType = null;
-            Object.keys(SLUG_TO_TYPE).forEach(function(slug) {
-                if (href.indexOf(slug) !== -1) matchedType = SLUG_TO_TYPE[slug];
-            });
-            if (!matchedType || !byType[matchedType] || !byType[matchedType].length) return;
-            var config = byType[matchedType].shift();
-            if (!config) return;
-            var nameArea = item.querySelector(
-                '.previewCartItem-name, .previewCartItem-content, a'
-            );
-            if (nameArea) {
-                var compactHtml = buildCompactHTML(config, "data-bulk-preview");
-                if (compactHtml) {
-                    var div = document.createElement("div");
-                    div.innerHTML = compactHtml;
-                    nameArea.insertAdjacentElement("afterend", div.firstElementChild);
-                }
-            }
-        });
-    }
-
     function init() {
         console.log("[cart] Init");
         fixPricesIfNeeded();
@@ -567,14 +428,6 @@ cart: true
             }, 400);
         });
         observer.observe(target, { childList: true, subtree: true });
-    }
-
-    var cartDropdown = document.querySelector('.navUser-item--cart, [data-cart-preview]');
-    if (cartDropdown) {
-        var previewObserver = new MutationObserver(function() {
-            setTimeout(enhanceCartPreview, 200);
-        });
-        previewObserver.observe(cartDropdown, { childList: true, subtree: true });
     }
 })();
 </script>

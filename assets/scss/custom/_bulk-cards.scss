@@ -1,0 +1,10 @@
+// ── Hide placeholder prices on product cards ────────────────────────────
+// All bulk-configurator products are \$0.01 placeholders.
+// Real pricing is shown inside the configurator on the product page.
+
+.card .price-section,
+.productCarousel .price-section,
+.productGrid .price-section,
+.listItem .price-section {
+  display: none !important;
+}

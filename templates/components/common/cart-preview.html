@@ -46,6 +46,14 @@
                     </li>
                 {{/each}}
             </ul>
+
+            <div class="previewCart-orderHint">
+                <a href="{{urls.cart}}">
+                    <span class="previewCart-orderHint-icon">📋</span>
+                    View full order details in cart
+                </a>
+            </div>
+
             {{{cart.preview_payment_widget}}}
             <div class="previewCartAction">
                 {{#if cart.show_primary_checkout_button}}
