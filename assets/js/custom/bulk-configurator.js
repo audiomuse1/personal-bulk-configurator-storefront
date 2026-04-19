@@ -2997,6 +2997,7 @@ const pt=t=>(e,s)=>{void 0!==s?s.addInitializer(()=>{customElements.define(t,e)}
         ></step-tshirt-garment>`;case"step-sticker-config":return tt`<step-sticker-config></step-sticker-config>`;case"step-button-config":return tt`<step-button-config></step-button-config>`;case"step-mug-config":return tt`<step-mug-config></step-mug-config>`;case"step-cancooler-config":return tt`<step-cancooler-config></step-cancooler-config>`;case"step-yardsign-config":return tt`<step-yardsign-config></step-yardsign-config>`;case"step-artwork":return tt`<step-artwork
           .printLocationId=${e.printLocationId||""}
           .sidedness=${e.sidedness||"one-sided"}
+          .productType=${this.productType}
         ></step-artwork>`;case"step-union-label":return tt`<step-union-label></step-union-label>`;case"step-notes":return tt`<step-notes></step-notes>`;default:return tt`<div>Unknown step: ${t.tag}</div>`}}renderStep(t,e){const s=this.currentStep===e,o=t.props?t.props(this.stepData):{};return tt`
       <div class="${s?"":"hidden"}">
         ${this.renderStepElement(t,o)}
