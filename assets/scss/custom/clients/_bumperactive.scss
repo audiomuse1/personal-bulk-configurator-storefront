@@ -1,0 +1,69 @@
+// =============================================================================
+// BUMPERACTIVE — Client Theme Overrides
+// =============================================================================
+//
+// Brand: bumperactive.com — Custom Stickers, Tees & More Since 2007
+// Colors: Teal #00afb9 / Dark Teal #4AADA9 / Cream #FDFCDC / Coral #F07070
+// Fonts: Belinda (display) + Museo Slab (body) — font files NOT yet added
+//
+// Color extraction from bumperactive.com:
+//   Header bg:       #000000 (dark charcoal)
+//   Nav bar:         #00afb9 (warm teal)
+//   Coral accent:    #F07070 (soft coral — CTAs, highlights)
+//   Page bg:         #FDFCDC (pale cream)
+//   Dark teal hover: #4AADA9
+// =============================================================================
+
+:root {
+  // ── Brand Colors ──────────────────────────────────────────────────────
+  --bulk-color-accent-primary:       #00afb9;
+  --bulk-color-accent-primary-dark:  #4AADA9;
+  --bulk-color-accent-secondary:     #F07070;
+  --bulk-color-accent-secondary-dark:#D85858;
+  --bulk-color-bg-page:              #FDFCDC;
+  --bulk-color-text-body:            #000000;
+
+  // ── Typography ────────────────────────────────────────────────────────
+  --bulk-font-display:               'Belinda', cursive;
+  --bulk-font-body:                  'Museo Slab', Georgia, serif;
+
+  // ── Header ────────────────────────────────────────────────────────────
+  --bulk-header-bg:                  #000000;
+  --bulk-header-text:                #ffffff;
+  --bulk-header-nav-bg:              #00afb9;
+  --bulk-header-nav-text:            #ffffff;
+  --bulk-header-nav-hover:           #4AADA9;
+
+  // ── Footer ────────────────────────────────────────────────────────────
+  --bulk-footer-bg:                  #000000;
+  --bulk-footer-text:                #cccccc;
+  --bulk-footer-heading:             #ffffff;
+  --bulk-footer-link:                #999999;
+  --bulk-footer-link-hover:          #00afb9;
+
+  // ── Shared UI (warm-tinted for cream background) ──────────────────────
+  --bulk-border-color:               #e0dfc8;
+  --bulk-surface-bg:                 #ffffff;
+  --bulk-surface-muted:              #f7f6ec;
+  --bulk-surface-offset:             #f5f4e4;
+  --bulk-shadow-sm:                  0 1px 4px rgba(90, 85, 50, 0.1);
+  --bulk-shadow-md:                  0 2px 10px rgba(90, 85, 50, 0.12);
+
+  // ── Product Page ──────────────────────────────────────────────────────
+  --bulk-product-preview-accent:     #00afb9;
+  --bulk-product-preview-label-bg:   #edf8f7;
+
+  // ── Configurator Shadow DOM ───────────────────────────────────────────
+  --bulk-configurator-accent:        #00afb9;
+  --bulk-configurator-accent-dark:   #4AADA9;
+
+  // ── Buttons ───────────────────────────────────────────────────────────
+  --bulk-btn-primary-bg:             #F07070;
+  --bulk-btn-primary-color:          #ffffff;
+  --bulk-btn-primary-hover:          #D85858;
+
+  // ── Quote bar ─────────────────────────────────────────────────────────
+  --bulk-quote-bg:                   #000000;
+  --bulk-quote-color:                #ffffff;
+  --bulk-quote-accent:               #00afb9;
+}
