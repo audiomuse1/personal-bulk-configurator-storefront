@@ -1,22 +1,21 @@
 // =============================================================================
-// BULK CHECKOUT — Generic Defaults
+// BULK CHECKOUT — Bumperactive
 // =============================================================================
 //
 // NOTE: Compiled separately from theme.scss — CSS custom properties
 // from _bulk-theme-vars are NOT available here.
 // All values MUST be hardcoded.
 //
-// Each client branch replaces the color values in this file.
-//
-// Default palette (neutral):
-//   Primary:    #0088cc / #006699
+// Bumperactive palette:
+//   Teal:       #00afb9 / #009da6
+//   Coral:      #F07070 / #D85858
+//   Cream:      #FDFCDC
+//   Charcoal:   #000000
 //   Error:      #cc4444
-//   Page bg:    #ffffff
-//   Header:     #000000
 // =============================================================================
 
 *:focus {
-  outline-color: #0088cc;
+  outline-color: #00afb9;
 }
 
 .optimizedCheckout-header {
@@ -24,47 +23,56 @@
   background-image: none;
   border-color: #000000;
   color: #ffffff;
+  text-align: center;
+  padding: 16px 20px;
+}
+
+.checkoutHeader-logo {
+  max-height: 50px;
+  width: auto;
+  margin: 0 auto;
+  display: block;
 }
 
 .optimizedCheckout-headingPrimary {
   color: #222222;
-  font-family: Georgia, serif;
+  font-family: 'Museo Slab', Georgia, serif;
   font-weight: 700;
 }
 
 .optimizedCheckout-headingSecondary {
   color: #333333;
-  font-family: Georgia, serif;
+  font-family: 'Museo Slab', Georgia, serif;
   font-weight: 500;
 }
 
 body {
-  background-color: #ffffff;
+  background-color: #FDFCDC;
 }
 
 .optimizedCheckout-overlay {
   background-color: #ffffff;
-  border-color: #e0e0e0;
+  border-color: #e0dfc8;
   color: #333333;
 }
 
 .optimizedCheckout-contentPrimary {
   color: #333333;
-  font-family: Georgia, serif;
+  font-family: 'Museo Slab', Georgia, serif;
   font-weight: 500;
 }
 
 .optimizedCheckout-contentSecondary {
   color: #666666;
-  font-family: Georgia, serif;
+  font-family: 'Museo Slab', Georgia, serif;
   font-weight: 400;
 }
 
 .optimizedCheckout-buttonPrimary {
-  background-color: #0088cc;
-  border-color: #0088cc;
+  background-color: #F07070;
+  border-color: #F07070;
   color: #ffffff;
-  font-family: Georgia, serif;
+  font-family: 'Museo Slab', Georgia, serif;
   font-weight: 700;
   letter-spacing: 0.05em;
   text-transform: uppercase;
@@ -72,19 +80,19 @@ body {
 
   &:focus,
   &:hover {
-    background-color: #006699;
-    border-color: #006699;
+    background-color: #D85858;
+    border-color: #D85858;
     color: #ffffff;
   }
 
   &:focus {
-    border-color: #006699;
-    box-shadow: 0 0 3px rgba(0, 136, 204, 0.5);
+    border-color: #D85858;
+    box-shadow: 0 0 3px rgba(240, 112, 112, 0.5);
   }
 
   &:active {
-    background-color: #005580;
-    border-color: #005580;
+    background-color: #C04848;
+    border-color: #C04848;
     color: #ffffff;
   }
 
@@ -102,28 +110,28 @@ body {
 
 .optimizedCheckout-buttonSecondary {
   background-color: #ffffff;
-  border-color: #0088cc;
-  color: #0088cc;
-  font-family: Georgia, serif;
+  border-color: #00afb9;
+  color: #00afb9;
+  font-family: 'Museo Slab', Georgia, serif;
   font-weight: 500;
   border-radius: 4px;
 
   &:focus,
   &:hover {
-    background-color: #f0f8ff;
-    border-color: #006699;
-    color: #006699;
+    background-color: #edf8f7;
+    border-color: #009da6;
+    color: #009da6;
   }
 
   &:focus {
-    border-color: #0088cc;
-    box-shadow: 0 0 3px rgba(0, 136, 204, 0.4);
+    border-color: #00afb9;
+    box-shadow: 0 0 3px rgba(0, 175, 185, 0.4);
   }
 
   &:active {
-    background-color: #e0f0ff;
-    border-color: #006699;
-    color: #006699;
+    background-color: #daf2f0;
+    border-color: #009da6;
+    color: #009da6;
   }
 
   &[disabled],
@@ -139,32 +147,32 @@ body {
 }
 
 a {
-  color: #006699;
-  font-family: Georgia, serif;
+  color: #009da6;
+  font-family: 'Museo Slab', Georgia, serif;
   font-weight: 500;
 
   &:focus,
   &:hover {
-    color: #0088cc;
+    color: #00afb9;
   }
 }
 
 .optimizedCheckout-orderSummary {
   background-color: #ffffff;
-  border-color: #e0e0e0;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  border-color: #e0dfc8;
+  box-shadow: 0 2px 10px rgba(90, 85, 50, 0.1);
 }
 
 .optimizedCheckout-orderSummary-cartSection {
-  border-color: #eeeeee;
+  border-color: #e0dfc8;
 }
 
 .optimizedCheckout-checkoutStep {
-  border-color: #e0e0e0;
+  border-color: #e0dfc8;
 }
 
 .optimizedCheckout-step {
-  background-color: #0088cc;
+  background-color: #00afb9;
 
   &::before {
     color: #ffffff;
@@ -187,7 +195,7 @@ a {
 }
 
 $bc-input-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.04);
-$bc-focus-shadow: 0 0 3px rgba(0, 136, 204, 0.4);
+$bc-focus-shadow: 0 0 3px rgba(0, 175, 185, 0.4);
 $bc-error-shadow: 0 0 3px rgba(204, 68, 68, 0.4);
 
 .optimizedCheckout-form-input,
@@ -213,7 +221,7 @@ $bc-error-shadow: 0 0 3px rgba(204, 68, 68, 0.4);
 .optimizedCheckout-form-select:focus,
 .optimizedCheckout-form-select:hover {
   background-color: #ffffff;
-  border-color: #0088cc;
+  border-color: #00afb9;
   box-shadow: $bc-focus-shadow, $bc-input-shadow;
 }
 
@@ -228,14 +236,14 @@ $bc-error-shadow: 0 0 3px rgba(204, 68, 68, 0.4);
 
   .optimizedCheckout-form-radio:checked + &,
   .optimizedCheckout-form-checkbox:checked + & {
-    background-color: #0088cc;
-    border-color: #0088cc;
+    background-color: #00afb9;
+    border-color: #00afb9;
     box-shadow: none;
   }
 
   .optimizedCheckout-form-radio:focus + &,
   .optimizedCheckout-form-checkbox:focus + & {
-    border-color: #0088cc;
+    border-color: #00afb9;
     box-shadow: $bc-focus-shadow, $bc-input-shadow;
   }
 
@@ -246,31 +254,31 @@ $bc-error-shadow: 0 0 3px rgba(204, 68, 68, 0.4);
 }
 
 .optimizedCheckout-discountBanner {
-  background-color: #f0f8ff;
+  background-color: #edf8f7;
   color: #333333;
-  font-family: Georgia, serif;
+  font-family: 'Museo Slab', Georgia, serif;
   font-weight: 500;
 
   svg {
-    fill: #0088cc;
+    fill: #00afb9;
   }
 }
 
 .optimizedCheckout-form-checklist {
   background-color: #ffffff;
-  border-color: #e0e0e0;
+  border-color: #e0dfc8;
   color: #333333;
 }
 
 .optimizedCheckout-form-checklist-item {
   background-color: #ffffff;
-  border-color: #e0e0e0;
+  border-color: #e0dfc8;
 }
 
 .optimizedCheckout-form-checklist-item:hover,
 .optimizedCheckout-form-checklist-item--selected {
-  background-color: #f0f8ff;
-  border-color: #0088cc;
+  background-color: #edf8f7;
+  border-color: #00afb9;
 }
 
 .optimizedCheckout-form-checklist-checkbox {
@@ -281,19 +289,71 @@ $bc-error-shadow: 0 0 3px rgba(204, 68, 68, 0.4);
   }
 
   &:focus ~ .form-label {
-    box-shadow: inset 0 0 0 1px #0088cc;
+    box-shadow: inset 0 0 0 1px #00afb9;
   }
 
   &:checked ~ .form-label::before {
-    border-color: #0088cc;
+    border-color: #00afb9;
   }
 
   &:checked ~ .form-label::after {
-    background: #0088cc;
+    background: #00afb9;
   }
 }
 
 .optimizedCheckout-loadingToaster {
   background-color: #000000;
   color: #ffffff;
+}
+
+// ── Checkout order detail injection styles ──────────────────────────────
+.bulk-checkout-details {
+  margin: 4px 0 2px 0;
+  padding: 0;
+
+  .checkout-field {
+    display: block;
+    font-size: 12px;
+    line-height: 1.5;
+    color: #545454;
+  }
+
+  .checkout-field-label {
+    font-weight: 600;
+    color: #757575;
+  }
+
+  .checkout-badge {
+    display: inline-block;
+    background: #00afb9;
+    color: white;
+    font-size: 9px;
+    font-weight: 700;
+    padding: 1px 6px;
+    border-radius: 2px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    margin-bottom: 3px;
+  }
+
+  .checkout-thumbs {
+    display: flex;
+    gap: 4px;
+    margin: 3px 0;
+
+    img {
+      width: 40px;
+      height: 40px;
+      object-fit: contain;
+      border-radius: 2px;
+      border: 1px solid #e0dfc8;
+    }
+
+    .checkout-thumb-label {
+      font-size: 9px;
+      color: #999;
+      text-align: center;
+      display: block;
+    }
+  }
 }
